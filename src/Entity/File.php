@@ -18,7 +18,7 @@ class File
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
 
-    #[ORM\ManyToOne(targetEntity: FileDirectory::class, inversedBy: 'files')]
+    #[ORM\ManyToOne(targetEntity: FileDirectory::class, cascade: ["persist"], inversedBy: 'files')]
     #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
     private ?FileDirectory $directory = null;
 

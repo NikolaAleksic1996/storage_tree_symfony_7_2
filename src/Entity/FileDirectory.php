@@ -19,7 +19,7 @@ class FileDirectory
     #[ORM\Column(type: "string", length: 255)]
     private string $name;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'subdirectories')]
+    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['persist'], inversedBy: 'subdirectories')]
     #[ORM\JoinColumn(onDelete: "CASCADE")]
     private ?self $parent = null;
 
