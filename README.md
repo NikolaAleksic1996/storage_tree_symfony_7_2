@@ -12,9 +12,9 @@ This Symfony application fetches data from an external API, processes and stores
 - Clone the repository
 - Create a `.env` file from `.env.dev`
 - Run `composer install`
+- Run `docker-compose up -d`
 - Run `php bin/console doctrine:database:create`
 - Run `php bin/console doctrine:migrations:migrate`
-- Run `docker-compose up -d`
 - Run `php bin/console app:fetch-storage-data`
 - Run `php bin/console cache:clear`
 - Run `symfony server:start`
