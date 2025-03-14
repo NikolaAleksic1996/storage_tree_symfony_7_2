@@ -1,0 +1,18 @@
+# config/packages/monolog.yaml
+monolog:
+  # Enable the default logging channel
+  channels: ["app"]
+
+  handlers:
+    # Logs will be written to the application log file (prod.log, dev.log, etc.)
+    main:
+      type: stream
+      path: "%kernel.logs_dir%/%kernel.environment%.log"
+      level: info
+      channels: ["!event"]
+
+    # Console handler - this logs messages to the console
+    console:
+      type: console
+      process_psr_3_messages: true
+      channels: ["app"]

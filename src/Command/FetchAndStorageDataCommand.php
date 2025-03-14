@@ -3,6 +3,8 @@
 namespace App\Command;
 
 use App\Service\StorageApiService;
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,13 +16,15 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:fetch-storage-data',
     description: 'Add a short description for your command',
 )]
-class FetchStorageDataCommand extends Command
+class FetchAndStorageDataCommand extends Command
 {
     private StorageApiService $storageApiService;
-    public function __construct(StorageApiService $storageApiService)
+    private LoggerInterface $logger;
+    public function __construct(StorageApiService $storageApiService, LoggerInterface $logger)
     {
         parent::__construct();
         $this->storageApiService = $storageApiService;
+        $this->logger = $logger;
     }
 
     protected function configure(): void
@@ -34,9 +38,18 @@ class FetchStorageDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Fetching data from external API...');
-        $this->storageApiService->fetchAndStoreData();
-        $output->writeln('Data fetch completed.');
+        $this->logger->info('Started fetching and storing data.');
+        try {
+            $this->storageApiService->fetchAndStoreData();
+            $output->writeln('Data fetch and store completed successfully.');
+            $this->logger->info('Data fetch and store completed successfully.');
 
-        return Command::SUCCESS;
+            return Command::SUCCESS;
+        } catch (Exception $e) {
+            $output->writeln('<error>Error occurred during the data fetch and store process: ' . $e->getMessage() . '</error>');
+            $this->logger->error('Error occurred during data fetch and store: ' . $e->getMessage());
+
+            return Command::FAILURE;
+        }
     }
 }

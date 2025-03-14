@@ -6,6 +6,11 @@ use App\Entity\File;
 use App\Entity\FileDirectory;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class StorageApiService
@@ -21,12 +26,19 @@ class StorageApiService
         $this->logger = $logger;
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function fetchAndStoreData(): void
     {
         $response = $this->client->request('GET', 'https://rest-test-eight.vercel.app/api/test#');
         $data = $response->toArray();
 
-        $this->logger->info('Fetched data from external API', ['timestamp' => time()]);
+        $this->logger->info('Data fetched from external API', ['timestamp' => time()]);
 
         $existingDirectories = $this->preloadDirectories();
         $existingFiles = $this->preloadFiles();
@@ -38,10 +50,18 @@ class StorageApiService
         foreach ($data['items'] as $url) {
             $this->processUrl($url['fileUrl'], $existingDirectories, $existingFiles, $rootDirectory);
         }
+        $this->logger->info('Data persist complete', ['timestamp' => time()]);
         $this->entityManager->flush();
-        $this->logger->info('Data import completed');
+        $this->logger->info('Data import completed', ['timestamp' => time()]);
     }
 
+    /**
+     * @param string $url
+     * @param array $existingDirectories
+     * @param array $existingFiles
+     * @param FileDirectory $parent
+     * @return void
+     */
     private function processUrl(string $url, array &$existingDirectories, array &$existingFiles, FileDirectory $parent): void
     {
         $parsed = parse_url($url);
@@ -64,6 +84,12 @@ class StorageApiService
         }
     }
 
+    /**
+     * @param string $name
+     * @param FileDirectory|null $parent
+     * @param array $existingDirectories
+     * @return FileDirectory
+     */
     private function getOrCreateDirectory(string $name, ?FileDirectory $parent, array &$existingDirectories): FileDirectory
     {
         $key = $parent ? $parent->getId() . '/' . $name : $name;
@@ -82,6 +108,12 @@ class StorageApiService
         return $directory;
     }
 
+    /**
+     * @param string $name
+     * @param FileDirectory|null $directory
+     * @param array $existingFiles
+     * @return void
+     */
     private function getOrCreateFile(string $name, ?FileDirectory $directory, array &$existingFiles): void
     {
         $key = $directory ? $directory->getId() . '/' . $name : $name;
@@ -98,6 +130,9 @@ class StorageApiService
         $existingFiles[$key] = $file;
     }
 
+    /**
+     * @return array
+     */
     private function preloadDirectories(): array
     {
         $directories = $this->entityManager->getRepository(FileDirectory::class)->findAll();
@@ -111,6 +146,9 @@ class StorageApiService
         return $indexedDirectories;
     }
 
+    /**
+     * @return array
+     */
     private function preloadFiles(): array
     {
         $files = $this->entityManager->getRepository(File::class)->findAll();
@@ -124,6 +162,11 @@ class StorageApiService
         return $indexedFiles;
     }
 
+    /**
+     * @param string $host
+     * @param array $existingDirectories
+     * @return FileDirectory
+     */
     private function getOrCreateRootDirectory(string $host, array &$existingDirectories): FileDirectory
     {
         if (isset($existingDirectories[$host])) {
