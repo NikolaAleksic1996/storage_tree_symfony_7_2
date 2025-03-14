@@ -38,7 +38,7 @@ class StorageApiService
         $response = $this->client->request('GET', 'https://rest-test-eight.vercel.app/api/test#');
         $data = $response->toArray();
 
-        $this->logger->info('Data fetched from external API', ['timestamp' => time()]);
+        $this->logger->info('Data fetched from external API', ['timestamp' => date('Y-m-d H:i:s', time())]);
 
         $existingDirectories = $this->preloadDirectories();
         $existingFiles = $this->preloadFiles();
@@ -50,9 +50,9 @@ class StorageApiService
         foreach ($data['items'] as $url) {
             $this->processUrl($url['fileUrl'], $existingDirectories, $existingFiles, $rootDirectory);
         }
-        $this->logger->info('Data persist complete', ['timestamp' => time()]);
+        $this->logger->info('Data persist complete', ['timestamp' => date('Y-m-d H:i:s', time())]);
         $this->entityManager->flush();
-        $this->logger->info('Data import completed', ['timestamp' => time()]);
+        $this->logger->info('Data import completed', ['timestamp' => date('Y-m-d H:i:s', time())]);
     }
 
     /**

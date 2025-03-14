@@ -3,20 +3,24 @@
 namespace App\Controller;
 
 use App\Service\CustomLogger;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class LoggerController extends AbstractController
 {
-    public function __construct(private readonly CustomLogger $customLogger)
+    private LoggerInterface $logger;
+    public function __construct(private readonly CustomLogger $customLogger, LoggerInterface $logger)
     {
+        $this->logger = $logger;
     }
 
     #[Route('/logger', name: 'logger')]
     public function index(): Response
     {
-        $this->customLogger->log("Hello from logger controller");
+        $this->logger->info('Hello from logger');
+        $this->customLogger->log("Hello from custom logger");
         return new Response('Logged successfully');
     }
 
