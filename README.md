@@ -15,7 +15,7 @@ This Symfony application fetches data from an external API, processes and stores
 - Run `docker-compose up -d --build`
 - Run `docker-compose restart`
 
-OPEN NEW TERMINAL and:
+ OPEN NEW TERMINAL and:
 - Run `php bin/console doctrine:database:create` if it doesn't exist
 - Run `php bin/console doctrine:migrations:migrate`
 - Run `php bin/console app:fetch-storage-data`
