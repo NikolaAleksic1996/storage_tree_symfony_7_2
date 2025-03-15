@@ -12,12 +12,14 @@ This Symfony application fetches data from an external API, processes and stores
 - Clone the repository
 - Create a `.env` file from `.env.dev`
 - Run `composer install`
-- Run `php bin/console doctrine:database:create`
+- Run `docker-compose up -d --build`
+- Run `docker-compose restart`
+
+OPEN NEW TERMINAL and:
+- Run `php bin/console doctrine:database:create` if it doesn't exist
 - Run `php bin/console doctrine:migrations:migrate`
-- Run `docker-compose up -d`
 - Run `php bin/console app:fetch-storage-data`
 - Run `php bin/console cache:clear`
-- Run `symfony server:start`
 - Run `http://127.0.0.1:8000/api/files-and-directories` to get files and directories
 - Run `http://127.0.0.1:8000/api/directories` to get paginated directories
 - Run `http://127.0.0.1:8000/api/files` to get paginated files
