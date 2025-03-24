@@ -27,7 +27,7 @@ class LoggerController extends AbstractController
     #[Route('/manual_logger', name: 'manual_logger')]
     public function manualLogger(CustomLogger $logger): Response
     {
-        $customLogger = new CustomLogger($logger);// you need to explicit implement LoggerInterface to use this logger
+        $customLogger = new CustomLogger($logger);
         $customLogger->log('Hello from manual logger controller');
         return new Response('Logged manual successfully');
     }

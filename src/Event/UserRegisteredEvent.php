@@ -11,6 +11,4 @@ class UserRegisteredEvent extends Event
     public function __construct()
     {
     }
-
-
 }
