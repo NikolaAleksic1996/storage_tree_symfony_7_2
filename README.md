@@ -1,4 +1,4 @@
-# Symfony File Storage API
+# Symfony File Storage API 
 
 This Symfony application fetches data from an external API, processes and stores it in a database, and exposes three REST API endpoints to retrieve files and directories.
 
